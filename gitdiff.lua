@@ -54,6 +54,7 @@ function diff_markers()
 	dir = path_of(file)
 	if check_git() then
 		dbg('Working on', file, 'in', dir)
+		editor:MarkerDeleteAll(22)
 		local diff = git_command("diff "..file)
 		local line = diff:read()
 		while line do
@@ -73,8 +74,6 @@ function diff_markers()
 				-- only mark added lines
 				if c == "+" then
 					diffmark:create(ln)
-				else
-					editor:MarkerDelete(ln, 22)
 				end
 				-- removed lines cannot be displayed
 				if c == " " or c == "+" then
