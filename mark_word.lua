@@ -41,6 +41,8 @@ end
 -- entry point for doubleclick
 local function doSelectMark()
 	init()
+	-- clear previous marks if any
+	clear()
 	local word = trim(currentWord())
 	if word ~= "" then
 		-- move cursor to lose default highlighted text
