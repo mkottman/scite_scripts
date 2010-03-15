@@ -1,8 +1,9 @@
 -- mark_word.lua - extman-based extension for Scite, that marks all occurences of doubleclicked word
 --
 -- This extension adds 'mark all occurences' feature to Scite. When a word is doubleclicked, every
--- occurence of the word in current file is highlighted using a transparent rectangle. The highlight
--- is kept until any key is pressed.
+-- occurence of the word in current file is highlighted using a transparent rectangle. Also, the
+-- lines that contain the words are marked by red triangle in the line number margin. The highlight
+-- is kept until the escape key is pressed.
 --
 -- Michal Kottman (c) 2010, MIT License
 
@@ -22,12 +23,15 @@ end
 
 local last
 local id
+local mt
 
 -- initialize extension
 local function init()
 	if id then return end
 	-- random user indicator id (>8)
 	id = 11
+	-- red marker - 9 is a random id "that works" (there should be a system...)
+	mt = MarkerType(9,SC_MARK_ARROW,nil,'red')
 	-- transparent rectangle
 	editor.IndicStyle[id] = 7
 	-- light blue color - change if you like
@@ -48,8 +52,13 @@ local function doSelectMark()
 			editor.IndicatorCurrent = id
 			editor.IndicatorValue = 1
 			editor:IndicatorFillRange(m.pos, m.len)
+			
+			-- create marker
+			local line = editor:LineFromPosition(m.pos)
+			local mk = mt:create(line)
+			
 			-- make a copy so that it can be cleared later
-			table.insert(last, {pos=m.pos, len=m.len})
+			table.insert(last, {pos=m.pos, len=m.len, mk=mk})
 		end
 	end
 end
@@ -61,10 +70,16 @@ local function clear()
 		editor.IndicatorCurrent = id
 		editor.IndicatorValue = 1
 		editor:IndicatorClearRange(m.pos, m.len)
+		m.mk:delete()
 	end
 	last = nil
 end
 
 -- register callbacks
 scite_OnDoubleClick(doSelectMark)
-scite_OnKey(clear)
+scite_OnKey(function(code, shift, control, alt)
+	-- linux or windows 'escape' key
+	if code == 65307 or code == 27 then
+		clear()
+	end
+end)
