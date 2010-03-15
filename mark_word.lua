@@ -55,7 +55,7 @@ local function doSelectMark()
 			
 			-- create marker
 			local line = editor:LineFromPosition(m.pos)
-			local mk = mt:create(line)
+			local mk = mt:create(line+1)
 			
 			-- make a copy so that it can be cleared later
 			table.insert(last, {pos=m.pos, len=m.len, mk=mk})
