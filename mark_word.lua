@@ -38,6 +38,18 @@ local function init()
 	editor.IndicFore[id] = colour_parse'#8080FF'
 end
 
+-- clear all marks
+local function clear()
+	if not last then return end
+	for _,m in ipairs(last) do
+		editor.IndicatorCurrent = id
+		editor.IndicatorValue = 1
+		editor:IndicatorClearRange(m.pos, m.len)
+		m.mk:delete()
+	end
+	last = nil
+end
+
 -- entry point for doubleclick
 local function doSelectMark()
 	init()
@@ -63,18 +75,6 @@ local function doSelectMark()
 			table.insert(last, {pos=m.pos, len=m.len, mk=mk})
 		end
 	end
-end
-
--- clear all marks
-local function clear()
-	if not last then return end
-	for _,m in ipairs(last) do
-		editor.IndicatorCurrent = id
-		editor.IndicatorValue = 1
-		editor:IndicatorClearRange(m.pos, m.len)
-		m.mk:delete()
-	end
-	last = nil
 end
 
 -- register callbacks
