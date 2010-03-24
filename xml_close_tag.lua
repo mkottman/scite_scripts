@@ -32,7 +32,7 @@ end
 -- Keeps only the tag name, strips any attributes.
 local function tag_only(tag)
     local i, n = 1, #tag
-    while i<=n and tag:sub(i,i):match('[%w:]') do
+    while i<=n and tag:sub(i,i) ~= " " do
         i = i+1
     end
     return tag:sub(1,i-1)
@@ -45,6 +45,8 @@ local function try_xml(c)
     if supported[ext] then
         if c == ">" then
             local pos = editor.CurrentPos
+            local ch = char_at(pos-1)
+            if ch ~= ">" then return end
             local tag = get_tag(pos)
             -- ignore closing/empty tags
             if tag and not tag:match('/') then
